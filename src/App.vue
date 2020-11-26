@@ -1,28 +1,89 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+  <div>
+
+    <input v-model="currentTodo" @keydown.enter="addTodo()" placeholder="Add a todo">
+    
+    <ul class = "todos">
+
+      <li v-for = "todo in todos" :key = "todo.id" >
+
+        <div class = "todoView">
+
+          <input type = "checkbox" v-model = "todo.completed" />
+
+          <span :class = "{ editing : editedTodo === todo }" @dblclick = "editTodo( todo )" v-show = "editedTodo !== todo">
+            {{ todo.label }}
+          </span>
+
+          <input class = "editing" v-model = "todo.label" v-show = "editedTodo == todo"@keyup.esc = "noEdit( todo )" @keyup.enter = "completeEdit( todo )" />
+
+          <button @click = "removeTodo( todo )"> Delete </button>
+
+        </div>
+
+      </li>
+    </ul>
+
   </div>
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  export default {
+    data() {
+      return {
+        todos : [],
+        currentTodo : '',
+        editedTodo : null,
+        originalTodoLabel : ''
+      };
+    },
+    methods : {
+      addTodo() {
+        this.todos.push({ id : this.todos.length, label : this.currentTodo, completed : false });
+        this.currentTodo = '';
+      },
+      removeTodo( todo ) {
+        var index = this.todos.indexOf( todo );
+        this.todos.splice( index , 1 );
+      },
+      editTodo( todo ) {
+        this.editedTodo = todo;
+        this.originalTodoLabel = todo.label;
+      },
+      completeEdit( todo ) {
+        this.editedTodo = null;
+        if( !todo.label ) {
+          this.removeTodo( todo );
+        }
+      },
+      noEdit( todo ) {
+        if( !this.editedTodo ) {
+          return;
+        }
+        this.editedTodo = null;
+        todo.label = this.originalTodoLabel
+      }
+
+    }  
+  };
+
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+ul {
+  list-style-type : none;
 }
+
+.todoView {
+
+}
+
+.editing {
+
+}
+
 </style>
