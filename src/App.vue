@@ -2,23 +2,14 @@
 
   <div class = "container">
 
-    <md-toolbar class = "main-nav md-medium">
+    <md-toolbar class = "main-nav">
 
-      <div class="md-toolbar-row">
 
-        <div class="md-toolbar-section-start">
-          <h3 class="md-display-1">Doin Stuff!</h3>
-        </div>
-
-        <md-button class="md-icon-button">
-          <md-icon>more_vert</md-icon>
-        </md-button>
-
+      <div class="md-toolbar-section-start">
+        <h3 class="md-display-1">Doin Stuff!</h3>
       </div>
 
-      <div class="md-toolbar-row">
-        <h3 class="md-caption"> The one stop shop for all your To-Do needs </h3>
-      </div>
+      <h3 class = "md-caption"> The one stop shop for all your To-Do needs </h3>
 
     </md-toolbar>
 
@@ -28,7 +19,7 @@
 
     <div class = "todo-main md-layout">
 
-      <md-card class = "todoList-card md-layout-item md-size-30" v-for = "todoList in todoLists" :key = "todoList.id" >
+      <md-card class = "todoList-card md-layout-item md-size-45" v-for = "todoList in todoLists" :key = "todoList.id" >
 
         <md-card-header>
 
@@ -46,13 +37,13 @@
 
               <input type = "checkbox" v-model = "todo.completed"/>
 
-              <span :class = "{ editing : editedTodo === todo }" class = "todo-label" v-on:click = "editTodo( todo )" v-show = "editedTodo !== todo">
-                {{ todo.label }}
-              </span>
+              <div :class = "{ editing : editedTodo === todo }" class = "todo-label md-list-item-text" v-on:click = "editTodo( todo )" v-show = "editedTodo !== todo">
+                <p> {{ todo.label }} </p>
+              </div>
 
               <input class = "editing" v-model = "todo.label" v-show = "editedTodo == todo" @keyup.esc = "noEdit( todo )" @keyup.enter = "completeEdit( todo )"/>
 
-              <md-button @click = "removeTodo( todo )"> Delete </md-button>
+              <md-button @click = "removeTodo( todoList , todo )"> Delete </md-button>
 
             </md-list-item>
 
@@ -61,7 +52,7 @@
         </md-card-content>
 
         <md-card-actions>
-          <md-button @click = "removeTodoList( todoList )"> Delete </md-button>
+          <md-button @click = "removeTodoList( todoList )"> Delete List </md-button>
         </md-card-actions>
 
       </md-card>
@@ -81,16 +72,15 @@
   export default {
     data() {
       return {
-        todoLists : [ [] , [] ],
+        todoLists : [ { todos : [] , currentTodo : '' } ],
         currentTodoList : '',
-        currentTodo : '',
         editedTodo : null,
         originalTodoLabel : ''
       };
     },
     methods : {
       addTodoList() {
-        this.todoLists.push({ id : this.todoLists.length , todos : [ { label : "butts" } , { label : "buttz" } ] });
+        this.todoLists.push({ id : this.todoLists.length , todos : [] });
         this.currentTodoList = this.todoList;
       },
       removeTodoList( todoList ) {
@@ -98,12 +88,15 @@
         this.todoLists.splice( index , 1 );
       },
       addTodo( todoList ) {
-        todoList.push( { id : todoList.length , todos : [ { label : this.currentTodo , complete : false }] });
+        var todo = todoList.todos;
+        var todoIndex = todoList.todos.length;
+        todo.push( { id : todoIndex , label : this.currentTodo , completed : false });
         this.currentTodo = '';
       },
-      removeTodo( todo ) {
-        var index = this.todos.indexOf( todo );
-        this.todos.splice( index , 1 );
+      removeTodo( todoList , todo ) {
+        var todos = todoList.todos;
+        var index = todos.indexOf( todo );
+        todos.splice( index , 1 );
       },
       editTodo( todo ) {
         this.editedTodo = todo;
@@ -137,7 +130,7 @@
 
 .main-nav {
   color : white;
-  background-color : black;
+  background-color : #2F4F4F;
 }
 
 .todos-header {
@@ -150,12 +143,12 @@
 }
 
 .todoList-card {
-  width : 80rem;
   margin : 10px;
+  background : #DCDCDC;
 }
 
-.todo-label {
-  max-height : 80px;
+.md-list-item-text p {
+  margin-left : 1rem;
 }
 
 .add-todo {
@@ -163,7 +156,7 @@
 }
 
 .editing {
-  width : 40%;
+  width : 80%;
 }
 
 </style>
